@@ -288,11 +288,11 @@ final class SuperFakturaClient
         $arr = $this->decodeToArray($body);
         if (array_key_exists('error', $arr)) {
             $err = $arr['error'];
-            if ((is_int($err) && $err == 0) || (is_string($err) and $err == '0')) {
-                return True;
+            if ((is_int($err) && $err == 0) || (is_string($err) && $err == '0')) {
+                return true;
             }
         }
-        return False;
+        return false;
     }
 
     /**
@@ -319,7 +319,7 @@ final class SuperFakturaClient
         $arr = $this->decodeToArray($body);
         $out = [];
         if (array_key_exists('BankAccounts', $arr) && is_array($arr['BankAccounts'])) {
-            for each ($arr['BankAccounts'] as $row) {
+            foreach ($arr['BankAccounts'] as $row) {
                 if (is_array($row)) {
                     $out[] = BankAccount::fromArray($row);
                 }
