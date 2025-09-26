@@ -13,15 +13,42 @@ final class PaymentReceipt
         public string $created
     ) {}
 
-    /** @param array<string,mixed> $data */
+    /**
+     * @param array<string,mixed> $data
+     */
     public static function fromArray(array $data): self
     {
-        $ip = $data['InvoicePayment'] ?? [];
-        return new self(
-            invoiceId: (int) ($ip['invoice_id'] ?? 0),
-            amount: (float) ($ip['amount'] ?? 0.0),
-            currency: (string) ($ip['currency'] ?? 'EUR'),
-            created: (string) ($ip['created'] ?? '')
-        );
+        $ip = [];
+        if (array_key_exists('InvoicePayment', $data) && is_array($data['InvoicePayment'])) {
+            /** @var array<string,mixed> $ip */
+            $ip = $data['InvoicePayment'];
+        }
+
+        $invoiceId = 0;
+        if (array_key_exists('invoice_id', $ip)) {
+            $raw = $ip['invoice_id'];
+            if (is_int($raw)) {
+                $invoiceId = $raw;
+            } elseif (is_string($raw) && ctype_digit($raw)) {
+                $invoiceId = (int) $raw;
+            }
+        }
+
+        $amount = 0.0;
+        if (array_key_exists('amount', $ip) && (is_float($ip['amount']) || is_int($ip['amount']) || is_string($ip['amount']))) {
+            $amount = (float) $ip['amount'];
+        }
+
+        $currency = 'EUR';
+        if (array_key_exists('currency', $ip) && is_string($ip['currency'])) {
+            $currency = $ip['currency'];
+        }
+
+        $created = '';
+        if (array_key_exists('created', $ip) && is_string($ip['created'])) {
+            $created = $ip['created'];
+        }
+
+        return new self($invoiceId, $amount, $currency, $created);
     }
 }

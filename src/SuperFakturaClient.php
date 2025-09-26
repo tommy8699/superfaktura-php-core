@@ -16,6 +16,7 @@ use Tommy8699\SuperFaktura\Core\Exceptions\ApiException;
 use Tommy8699\SuperFaktura\Core\Exceptions\HttpException;
 use Tommy8699\SuperFaktura\Core\Support\Mask;
 
+/** @psalm-type Assoc = array<string,mixed> */
 final class SuperFakturaClient
 {
     private Client $client;
@@ -35,6 +36,15 @@ final class SuperFakturaClient
     }
 
     private static function makeClient(Config $cfg, ?LoggerInterface $logger): Client
+    /**
+     * @return array<string,mixed>
+     */
+    private function decodeToArray(string $body): array
+    {
+        $decoded = json_decode($body, true);
+        return is_array($decoded) ? $decoded : [];
+    }
+
     {
         $stack = HandlerStack::create();
 
@@ -96,8 +106,8 @@ final class SuperFakturaClient
             if ($code !== 200) {
                 throw new HttpException('Failed to create invoice: ' . $body, $code);
             }
-            $data = json_decode($body, true);
-            $arr = is_array($data) ? $data : ['id' => 0];
+            $arr = $this->decodeToArray($body);
+            if ($arr === []) { $arr = ['id' => 0]; }
             return Invoice::fromArray($arr);
         } catch (GuzzleException $e) {
             throw new ApiException('HTTP error: ' . $e->getMessage(), (int) $e->getCode());
@@ -142,14 +152,15 @@ final class SuperFakturaClient
             if ($code !== 200) {
                 throw new HttpException('Failed to mark as paid: ' . $body, $code);
             }
-            $data = json_decode($body, true);
-            $arr = is_array($data) ? $data : ['InvoicePayment' => ['invoice_id' => (int)$invoiceId, 'amount' => $amount, 'currency' => $currency, 'created' => $paidAt->format('Y-m-d')]];
+            $arr = $this->decodeToArray($body);
+            if ($arr === []) { $arr = ['InvoicePayment' => ['invoice_id' => (int)$invoiceId, 'amount' => $amount, 'currency' => $currency, 'created' => $paidAt->format('Y-m-d')]]; }
             return PaymentReceipt::fromArray($arr);
         } catch (GuzzleException $e) {
             throw new ApiException('HTTP error: ' . $e->getMessage(), (int) $e->getCode());
         }
     }
 
+    /** @return array<string,mixed> */
     public function getInvoiceById(int|string $invoiceId): array
     {
         $auth = $this->config->buildAuthHeader();
@@ -168,8 +179,8 @@ final class SuperFakturaClient
             if ($code !== 200) {
                 throw new HttpException('Failed to get invoice: ' . $body, $code);
             }
-            $decoded = json_decode($body, true);
-            return is_array($decoded) ? $decoded : ['raw' => $body];
+            $arr = $this->decodeToArray($body);
+            return $arr === [] ? ['raw' => $body] : $arr;
         } catch (GuzzleException $e) {
             throw new ApiException('HTTP error: ' . $e->getMessage(), (int) $e->getCode());
         }
