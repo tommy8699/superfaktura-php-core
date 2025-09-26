@@ -1,0 +1,9 @@
+parameters:
+  level: max
+  paths:
+    - src
+  checkGenericClassInNonGenericObjectType: true
+  reportUnmatchedIgnoredErrors: true
+  inferPrivatePropertyTypeFromConstructor: true
+  excludePaths:
+    - tests/*
