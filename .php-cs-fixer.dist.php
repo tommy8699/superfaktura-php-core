@@ -1,19 +1,22 @@
 <?php
 
-$finder = PhpCsFixer\Finder::create()
-    ->in(__DIR__ . '/src')
-    ->name('*.php')
-    ->ignoreDotFiles(true)
-    ->ignoreVCS(true);
+declare(strict_types=1);
 
-return (new PhpCsFixer\Config())
+use PhpCsFixer\Config;
+use PhpCsFixer\Finder;
+
+$finder = Finder::create()
+    ->in(__DIR__ . '/src')
+    ->in(__DIR__ . '/tests')
+    ->name('*.php');
+
+return (new Config())
     ->setRiskyAllowed(true)
     ->setRules([
         '@PSR12' => true,
-        'declare_strict_types' => true,
+        'array_syntax' => ['syntax' => 'short'],
         'no_unused_imports' => true,
-        'ordered_imports' => true,
-        'no_extra_blank_lines' => true,
         'single_quote' => true,
+        'declare_strict_types' => true
     ])
     ->setFinder($finder);

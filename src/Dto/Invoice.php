@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Tommy8699\SuperFaktura\Core\Dto;
 
@@ -12,7 +14,8 @@ final class Invoice
         public ?string $number,
         public ?string $currency,
         public ?float $total
-    ) {}
+    ) {
+    }
 
     /**
      * @param Assoc $data
@@ -37,10 +40,7 @@ final class Invoice
             }
         }
 
-        $currency = null;
-        if (array_key_exists('currency', $data) && is_string($data['currency'])) {
-            $currency = $data['currency'];
-        }
+        $currency = (array_key_exists('currency', $data) && is_string($data['currency'])) ? $data['currency'] : null;
 
         $total = null;
         if (array_key_exists('total', $data)) {

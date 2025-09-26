@@ -2,10 +2,14 @@
 <phpunit bootstrap="vendor/autoload.php"
          colors="true"
          failOnWarning="true"
-         failOnRisky="true">
+         failOnRisky="true"
+         cacheResult="false">
   <testsuites>
-    <testsuite name="SuperFaktura Core">
-      <directory suffix="Test.php">tests</directory>
+    <testsuite name="Unit">
+      <directory suffix="Test.php">tests/Unit</directory>
+    </testsuite>
+    <testsuite name="Integration">
+      <directory suffix="Test.php">tests/Integration</directory>
     </testsuite>
   </testsuites>
 </phpunit>

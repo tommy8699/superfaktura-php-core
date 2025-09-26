@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Tommy8699\SuperFaktura\Core\Dto;
 
@@ -12,7 +14,8 @@ final class PaymentReceipt
         public float $amount,
         public string $currency,
         public string $created
-    ) {}
+    ) {
+    }
 
     /**
      * @param Assoc $data
@@ -38,20 +41,13 @@ final class PaymentReceipt
         $amount = 0.0;
         if (array_key_exists('amount', $ip)) {
             $rawAmt = $ip['amount'];
-            if (is_float($rawAmt) || is_int($rawAmt) || (is_string($rawAmt) and is_numeric($rawAmt))) {
+            if (is_float($rawAmt) || is_int($rawAmt) || (is_string($rawAmt) && is_numeric($rawAmt))) {
                 $amount = (float) $rawAmt;
             }
         }
 
-        $currency = 'EUR';
-        if (array_key_exists('currency', $ip) && is_string($ip['currency'])) {
-            $currency = $ip['currency'];
-        }
-
-        $created = '';
-        if (array_key_exists('created', $ip) && is_string($ip['created'])) {
-            $created = $ip['created'];
-        }
+        $currency = (array_key_exists('currency', $ip) && is_string($ip['currency'])) ? $ip['currency'] : 'EUR';
+        $created  = (array_key_exists('created', $ip) && is_string($ip['created'])) ? $ip['created'] : '';
 
         return new self($invoiceId, $amount, $currency, $created);
     }

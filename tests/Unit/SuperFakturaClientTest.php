@@ -24,7 +24,8 @@ final class SuperFakturaClientTest extends TestCase
 
     public function test_create_invoice_ok(): void
     {
-        $sf = $this->mockClient([new Response(200, [], json_encode(['id' => 123, 'number' => '2025-001', 'currency' => 'EUR', 'total' => 100.0]))]);
+        $respBody = json_encode(['id' => 123, 'number' => '2025-001', 'currency' => 'EUR', 'total' => 100.0]);
+        $sf = $this->mockClient([new Response(200, [], $respBody)]);
         $invoice = $sf->createInvoice(['Invoice' => ['name' => 'Test']]);
         $this->assertSame(123, $invoice->id);
         $this->assertSame('EUR', $invoice->currency);
