@@ -14,7 +14,6 @@ use Tommy8699\SuperFaktura\Core\Exceptions\ApiException;
 use Tommy8699\SuperFaktura\Core\Exceptions\HttpException;
 use Tommy8699\SuperFaktura\Core\Support\Mask;
 
-/** @psalm-type Assoc = array<string,mixed> */
 final class SuperFakturaClient
 {
     private Client $client;
@@ -34,15 +33,6 @@ final class SuperFakturaClient
     }
 
     private static function makeClient(Config $cfg, ?LoggerInterface $logger): Client
-    /**
-     * @return array<string,mixed>
-     */
-    private function decodeToArray(string $body): array
-    {
-        $decoded = json_decode($body, true);
-        return is_array($decoded) ? $decoded : [];
-    }
-
     {
         $stack = HandlerStack::create();
 
@@ -55,8 +45,10 @@ final class SuperFakturaClient
                 if ($response) {
                     $code = $response->getStatusCode();
                     if (in_array($code, [429, 500, 502, 503, 504], true)) {
-                        if ($logger) $logger->warning('Retrying request', ['attempt' => $retries + 1, 'status' => $code]);
-                        return True;
+                        if ($logger) {
+                            $logger->warning('Retrying request', ['attempt' => $retries + 1, 'status' => $code]);
+                        }
+                        return true;
                     }
                 }
                 return false;
@@ -73,6 +65,15 @@ final class SuperFakturaClient
             'connect_timeout' => $cfg->connectTimeout,
             'handler' => $stack,
         ]);
+    }
+
+    /**
+     * @return array<string,mixed>
+     */
+    private function decodeToArray(string $body): array
+    {
+        $decoded = json_decode($body, true);
+        return is_array($decoded) ? $decoded : [];
     }
 
     /**
@@ -151,7 +152,9 @@ final class SuperFakturaClient
                 throw new HttpException('Failed to mark as paid: ' . $body, $code);
             }
             $arr = $this->decodeToArray($body);
-            if ($arr === []) { $arr = ['InvoicePayment' => ['invoice_id' => (int)$invoiceId, 'amount' => $amount, 'currency' => $currency, 'created' => $paidAt->format('Y-m-d')]]; }
+            if ($arr === []) {
+                $arr = ['InvoicePayment' => ['invoice_id' => (int)$invoiceId, 'amount' => $amount, 'currency' => $currency, 'created' => $paidAt->format('Y-m-d')]];
+            }
             return PaymentReceipt::fromArray($arr);
         } catch (GuzzleException $e) {
             throw new ApiException('HTTP error: ' . $e->getMessage(), (int) $e->getCode());
