@@ -1,4 +1,4 @@
-# SuperFaktura PHP Core
+# SuperFaktura PHP Core (Production)
 
 Production-ready, framework-agnostic PHP klient pre **SuperFaktura API**.
 

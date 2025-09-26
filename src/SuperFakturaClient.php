@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Tommy8699\SuperFaktura\Core;
 
@@ -160,7 +158,9 @@ final class SuperFakturaClient
         }
     }
 
-    /** @return array<string,mixed> */
+    /**
+     * @return array<string,mixed>
+     */
     public function getInvoiceById(int|string $invoiceId): array
     {
         $auth = $this->config->buildAuthHeader();

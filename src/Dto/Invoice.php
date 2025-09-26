@@ -1,16 +1,9 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Tommy8699\SuperFaktura\Core\Dto;
 
 /**
- * @psalm-type InvoiceArray = array{
- *   id?: int|string,
- *   number?: string|int|null,
- *   currency?: string|null,
- *   total?: float|int|string|null
- * }
+ * @phpstan-type Assoc array<string,mixed>
  */
 final class Invoice
 {
@@ -22,7 +15,7 @@ final class Invoice
     ) {}
 
     /**
-     * @param array<string,mixed> $data
+     * @param Assoc $data
      */
     public static function fromArray(array $data): self
     {
@@ -37,8 +30,11 @@ final class Invoice
         }
 
         $number = null;
-        if (array_key_exists('number', $data) && (is_string($data['number']) || is_int($data['number']))) {
-            $number = (string) $data['number'];
+        if (array_key_exists('number', $data)) {
+            $rawNum = $data['number'];
+            if (is_string($rawNum) || is_int($rawNum)) {
+                $number = (string) $rawNum;
+            }
         }
 
         $currency = null;
@@ -47,8 +43,11 @@ final class Invoice
         }
 
         $total = null;
-        if (array_key_exists('total', $data) && (is_float($data['total']) || is_int($data['total']) || is_string($data['total']))) {
-            $total = (float) $data['total'];
+        if (array_key_exists('total', $data)) {
+            $rawTotal = $data['total'];
+            if (is_float($rawTotal) || is_int($rawTotal) || (is_string($rawTotal) && is_numeric($rawTotal))) {
+                $total = (float) $rawTotal;
+            }
         }
 
         return new self($id, $number, $currency, $total);

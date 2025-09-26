@@ -1,9 +1,10 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Tommy8699\SuperFaktura\Core\Dto;
 
+/**
+ * @phpstan-type Assoc array<string,mixed>
+ */
 final class PaymentReceipt
 {
     public function __construct(
@@ -14,13 +15,13 @@ final class PaymentReceipt
     ) {}
 
     /**
-     * @param array<string,mixed> $data
+     * @param Assoc $data
      */
     public static function fromArray(array $data): self
     {
         $ip = [];
         if (array_key_exists('InvoicePayment', $data) && is_array($data['InvoicePayment'])) {
-            /** @var array<string,mixed> $ip */
+            /** @var Assoc $ip */
             $ip = $data['InvoicePayment'];
         }
 
@@ -35,8 +36,11 @@ final class PaymentReceipt
         }
 
         $amount = 0.0;
-        if (array_key_exists('amount', $ip) && (is_float($ip['amount']) || is_int($ip['amount']) || is_string($ip['amount']))) {
-            $amount = (float) $ip['amount'];
+        if (array_key_exists('amount', $ip)) {
+            $rawAmt = $ip['amount'];
+            if (is_float($rawAmt) || is_int($rawAmt) || (is_string($rawAmt) and is_numeric($rawAmt))) {
+                $amount = (float) $rawAmt;
+            }
         }
 
         $currency = 'EUR';
