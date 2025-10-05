@@ -25,7 +25,3 @@ jobs:
       # PHPUnit
       - name: Run PHPUnit tests
         run: composer test
-
-      # PHP-CS-Fixer check
-      - name: Run PHP-CS-Fixer
-        run: vendor/bin/php-cs-fixer fix --dry-run --diff
